@@ -15,10 +15,19 @@ const links: Record<Role, string[]> = {
   junior: ['Junior Staff Dashboard', 'Logout'],
 };
 
-const Sidebar = ({ role }: { role: Role }) => {
+const Sidebar = ({ role, isSidebarOpen, setIsSidebarOpen }: { role: Role, isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
   return (
-    <div className="w-64 h-screen bg-purple-200 p-4 space-y-4 fixed top-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div className={`w-64 h-screen bg-purple-200 p-4 space-y-4 fixed top-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out`}>
       <h2 className="text-lg font-semibold text-purple-600">APER FORM</h2>
+      <div className='absolute inset-0'>
+        {isSidebarOpen && (
+          <div
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className='absolute top-[45%] right-[-1rem] border rounded-full border-purple-600 cursor-pointer'>
+            <MdKeyboardDoubleArrowLeft size={25} />
+          </div>
+        )}
+      </div>
       <ul className="pt-5 space-y-4">
         {links[role].map((link, index) => (
           <li key={index} className="py-2">
@@ -51,10 +60,10 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="flex">
-       {isSidebarOpen && <div className="absolute inset-0 bg-black/50"></div>}
+      {isSidebarOpen && <div className="absolute inset-0 bg-black/50 z-10" onClick={() => setIsSidebarOpen(false)}></div>}
       {/* Mobile Hamburger Button */}
       <button
-        className="md:hidden p-4 text-purple-600"
+        className="md:hidden p-4 text-purple-600 z-20"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,28 +72,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       </button>
 
       {/* Sidebar */}
-      <div className={`w-64 h-screen bg-purple-200 p-4 space-y-4 fixed top-0 left-0 transform 
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out`}>
-        <h2 className="text-lg font-semibold text-purple-600">APER FORM</h2>
-        
-        <div className='absolute inset-0'>
-            {isSidebarOpen && <div 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className='absolute top-[45%] right-[-1rem] border rounded-full border-purple-600'>
-                <MdKeyboardDoubleArrowLeft size={25} />
-            </div>}
-        </div>
-
-        <ul className="pt-5 space-y-4">
-          {links[role].map((link, index) => (
-            <li key={index} className="py-2">
-              <a href={`/dashboard/${role}/${link.toLowerCase().replace(' ', '-')}`} className="text-black hover:text-purple-900">
-                {link}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Sidebar role={role} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
       {/* Main Content */}
       <main className="flex-1 p-6 bg-white min-h-screen md:ml-64">
